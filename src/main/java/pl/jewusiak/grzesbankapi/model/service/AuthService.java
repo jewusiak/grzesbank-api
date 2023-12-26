@@ -127,6 +127,13 @@ public class AuthService {
         }
         return Optional.empty();
     }
+    
+    public Optional<User> authOauth2(Map<String, Object> attributes) {
+        if(!(attributes.get("email") instanceof String)) 
+            return Optional.empty();
+        String email = attributes.get("email").toString();
+        return userRepository.findById(email);
+    }
 
     private boolean decideOnUserLock(User user) {
         if(user.isLoginLocked()) {

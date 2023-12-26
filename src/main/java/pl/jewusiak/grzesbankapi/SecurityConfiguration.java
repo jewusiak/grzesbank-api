@@ -34,13 +34,18 @@ public class SecurityConfiguration {
         http.logout(config -> config.logoutUrl("/auth/logout").logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.NO_CONTENT)));
         http.cors(config->{
             CorsConfiguration configuration = new CorsConfiguration();
-            configuration.setAllowedOrigins(Arrays.asList("http://localhost:37813"));
+            configuration.setAllowedOrigins(Arrays.asList("http://localhost:8081"));
             configuration.setAllowedMethods(Arrays.asList("*"));
             configuration.setAllowedHeaders(Arrays.asList("*"));
             configuration.setAllowCredentials(true);
             UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
             source.registerCorsConfiguration("/**", configuration);
             config.configurationSource(source);
+        });
+        http.oauth2Login(config-> {
+           config.authorizationEndpoint(c->c.baseUri("/auth/oauth2/login")); 
+           config.redirectionEndpoint(c->c.baseUri("/auth/oauth2/callback")); 
+           config.defaultSuccessUrl("/auth/oauth2/loginsuccess"); 
         });
         http.csrf(AbstractHttpConfigurer::disable);
         return http.build();
