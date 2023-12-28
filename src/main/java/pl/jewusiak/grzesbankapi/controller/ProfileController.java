@@ -49,4 +49,10 @@ public class ProfileController {
         authService.changePasswordForUser(user, request.getPassword(), false);
         return ResponseEntity.ok().build();
     }
+    
+    @GetMapping("/basicdata")
+    public ResponseEntity<?> getBasicData(Authentication authentication) {
+        var user = userService.getUser(authentication);
+        return ResponseEntity.ok(responseMapper.map(user));
+    }
 }

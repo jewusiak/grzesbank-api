@@ -15,16 +15,16 @@ public class AccountFactory {
     private static final String ACCOUNT_SUFFIX = "252100";
 
 
-    public Account prepareAccount(User user){
+    public Account prepareAccount(User user) {
         return new Account(generateNo(), new BigDecimal(0), user);
     }
-    
+
     private String generateNo() {
         var nextNumber = new Random().nextInt(Integer.MAX_VALUE);
         String accountNumber = BANK_ID + String.format("%16s", String.valueOf(nextNumber)).replace(' ', '0');
         var calcAccountNumber = new BigInteger(accountNumber + ACCOUNT_SUFFIX);
         var modulod = calcAccountNumber.mod(new BigInteger("97"));
-        var control = new BigInteger("98").subtract(modulod);
+        var control = String.format("%2s", new BigInteger("98").subtract(modulod)).replace(' ', '0');
         return control + accountNumber;
     }
 }
