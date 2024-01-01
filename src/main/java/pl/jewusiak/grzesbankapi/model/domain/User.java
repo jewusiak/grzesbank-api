@@ -89,6 +89,9 @@ public class User implements UserDetails {
     
     @Embeddable
     @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class Address {
         
         @Pattern(regexp = ValidationService.plTextboxRegex)

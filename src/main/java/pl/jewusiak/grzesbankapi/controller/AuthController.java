@@ -22,6 +22,7 @@ import pl.jewusiak.grzesbankapi.model.request.RegistrationRequest;
 import pl.jewusiak.grzesbankapi.model.response.PasswordCombinationResponse;
 import pl.jewusiak.grzesbankapi.service.AuthService;
 import pl.jewusiak.grzesbankapi.utils.IpAddressExtractor;
+import pl.jewusiak.grzesbankapi.utils.PasswordCombinationsGenerator;
 import pl.jewusiak.grzesbankapi.utils.ValidationService;
 
 import static org.springframework.security.web.context.HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY;
@@ -34,6 +35,7 @@ public class AuthController {
     private final AuthService authService;
     private final ResponseMapper responseMapper;
     private final IpAddressExtractor ipAddressExtractor;
+    private final PasswordCombinationsGenerator passwordCombinationsGenerator;
 
     @GetMapping("/login")
     @SneakyThrows

@@ -16,6 +16,7 @@ import pl.jewusiak.grzesbankapi.repository.UserLoginAttemptRepository;
 import pl.jewusiak.grzesbankapi.repository.UserRepository;
 import pl.jewusiak.grzesbankapi.utils.AccountFactory;
 import pl.jewusiak.grzesbankapi.utils.CreditCardFactory;
+import pl.jewusiak.grzesbankapi.utils.PasswordCombinationsGenerator;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -29,13 +30,11 @@ import java.util.stream.Stream;
 public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
-    private final CreditCardFactory creditCardFactory;
-    private final AccountFactory accountFactory;
     private final UserRepository userRepository;
-    private final TransactionService transactionService;
+    private final UserService userService;
     private final PasswordResetRequestRepository passwordResetRequestRepository;
     private final UserLoginAttemptRepository userLoginAttemptRepository;
-    private final ResourceAccessAttemptsService raaService;
+    private final PasswordCombinationsGenerator passwordCombinationsGenerator;
     @Value("${pl.jewusiak.grzesbankapi.passwordreset.urlprefix}")
     private String passwordResetUrlPrefix;
 
@@ -45,81 +44,32 @@ public class AuthService {
     @Transactional
     public void register(RegistrationRequest request) {
         request.setEmail(request.getEmail() != null ? request.getEmail().toLowerCase() : null);
-        var user = userMapper.mapBasicData(request);
-        List<PasswordCombination> combinations = generatePasswordCombinations(request.getPassword(), user);
-        user.setPasswordCombinations(combinations);
-        var account = accountFactory.prepareAccount(user);
-        user.setAccount(account);
-        var cc = creditCardFactory.prepareCard(user);
-        user.setCreditCard(cc);
-        var savedUser = userRepository.save(user);
+        var user = userMapper.map(request);
         if (request.getInitialBalance() != null && request.getInitialBalance().compareTo(BigDecimal.ZERO) > 0) {
-            transactionService.processTransaction(Transaction.builder()
+            var transaction = Transaction.builder()
                     .amount(request.getInitialBalance())
                     .senderAccountNumber(bankAccountNumber)
-                    .senderName("Grzesbank - initial balance Acc")
-                    .senderAddress("1 Grzesbank Strasse, Berlin")
+                    .senderName("Grzesbank - 1st Branch")
+                    .senderAddress("Złota 10, Warsaw")
                     .recipientName(user.getFirstName() + " " + user.getLastName())
                     .recipientAddress(user.getAddress().toString())
-                    .recipientAccountNumber(savedUser.getAccount().getAccountNumber())
                     .executionTime(ZonedDateTime.now())
                     .title("Initial balance")
-                    .build());
+                    .build();
+            userService.createUser(user, transaction);
+        }else {
+            userService.createUser(user);
         }
     }
-
-
-    public List<PasswordCombination> generatePasswordCombinations(String rawPassword, User user) {
-        if (rawPassword.length() < 8) {
-            throw new IllegalArgumentException("Password has to be >= 8 chars long.");
-        }
-        List<PasswordCombination> list = new ArrayList<>(5);
-        for (int i = 0; i < 5; i++) {
-            var pc = new PasswordCombination();
-            pc.setIndices(selectIndices(rawPassword.length()));
-            var selectedChars = Stream.of(pc.getIndices())
-                    .map(rawPassword::charAt)
-                    .collect(StringBuilder::new, StringBuilder::append, StringBuilder::append)
-                    .toString();
-            var hashedPassword = passwordEncoder.encode(selectedChars);
-            pc.setPasswordHash(hashedPassword);
-            pc.setUser(user);
-            list.add(pc);
-        }
-        return list;
-    }
-
-    private Integer[] selectIndices(int length) {
-        List<Integer> indices = new ArrayList<>(5);
-        Random random = new Random();
-        while (indices.size() < 5) {
-            var index = random.nextInt(length);
-            if (!indices.contains(index)) {
-                indices.add(index);
-            }
-        }
-        return indices.stream().mapToInt(i -> i).sorted().boxed().toArray(Integer[]::new);
-    }
-
+    
     public PasswordCombinationResponse getRandomPasswordCombination(String email) {
-        email = email.toLowerCase();
-        var opt = userRepository.findById(email);
-        if (opt.isEmpty()) {
-            // return dummy password combination response with password between 8 and 16 chars
-            return PasswordCombinationResponse.builder().pcid(UUID.randomUUID()).indices(selectIndices(new Random().nextInt(8, 17))).build();
-        }
-        List<PasswordCombination> passwordCombinations = opt.get().getPasswordCombinations();
-        var pc = passwordCombinations.get(new Random().nextInt(passwordCombinations.size()));
-        return PasswordCombinationResponse.builder().pcid(pc.getId()).indices(pc.getIndices()).build();
+        return passwordCombinationsGenerator.getRandomPasswordCombination(userRepository.findById(email));
     }
 
     public Optional<User> auth(UUID pcid, String email, String password) {
         email = email.toLowerCase();
         var user = userRepository.findById(email);
         if (user.isPresent() && canUserAccessLogin(user.get())) {
-            //todo: remove bypass
-//            if (true)
-//                return user;
             for (var pc : user.get().getPasswordCombinations()) {
                 if (pc.getId().equals(pcid) && passwordEncoder.matches(password, pc.getPasswordHash())) {
                     addLoginAttempt(user.get(), true);
@@ -163,7 +113,7 @@ public class AuthService {
     }
 
     public void changePasswordForUser(User user, String newPassword, boolean resetLoginLock) {
-        List<PasswordCombination> combinations = generatePasswordCombinations(newPassword, user);
+        List<PasswordCombination> combinations = passwordCombinationsGenerator.generatePasswordCombinations(newPassword, user);
         user.getPasswordCombinations().clear();
         user.getPasswordCombinations().addAll(combinations);
         if (resetLoginLock) {
