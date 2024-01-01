@@ -116,14 +116,13 @@ public class AuthService {
     public Optional<User> auth(UUID pcid, String email, String password) {
         email = email.toLowerCase();
         var user = userRepository.findById(email);
-        if (user.isPresent() && decideOnUserLock(user.get())) {
+        if (user.isPresent() && canUserAccessLogin(user.get())) {
             //todo: remove bypass
 //            if (true)
 //                return user;
             for (var pc : user.get().getPasswordCombinations()) {
                 if (pc.getId().equals(pcid) && passwordEncoder.matches(password, pc.getPasswordHash())) {
                     addLoginAttempt(user.get(), true);
-                    userLoginAttemptRepository.overrideLoginsForUser(ZonedDateTime.now(), user.get());
                     return user;
                 }
             }
@@ -132,22 +131,12 @@ public class AuthService {
         return Optional.empty();
     }
 
-    private boolean decideOnUserLock(User user) {
+    private boolean canUserAccessLogin(User user) {
         if (user.isLoginLocked()) {
             log.info("User {} is already locked out until {}.", user.getEmail(), user.getLoginLockTime());
             return false;
         }
-        var numberOfAttempts = userLoginAttemptRepository.countLoginAttemptsByDateAfterAndUserAndOverrideDateIsNullAndSuccessfulIsFalse(ZonedDateTime.now().minusMinutes(30), user);
-        if (numberOfAttempts < 5) { 
-            return true;
-        }
-
-        //block account for 12 hrs
-        user.setLoginLockTime(LocalDateTime.now().plusHours(12));
-        userRepository.save(user);
-
-        log.info("User {} has been locked out until {}.", user.getEmail(), user.getLoginLockTime().toString());
-        return false;
+        return true;
     }
 
     public void generatePasswordResetRequest(String email) {
@@ -187,5 +176,19 @@ public class AuthService {
         log.info("Adding {}successful login attempt for {}.", isSuccessful ? "" : "un", user.getEmail());
         var att = UserLoginAttempt.builder().successful(isSuccessful).date(ZonedDateTime.now()).user(user).build();
         userLoginAttemptRepository.save(att);
+        if (isSuccessful) {
+            userLoginAttemptRepository.overrideLoginsForUser(ZonedDateTime.now(), user);
+            log.info("Overridden login attempts for user {}.", user.getEmail());
+        } else {
+            var numberOfAttempts = userLoginAttemptRepository.countLoginAttemptsByDateAfterAndUserAndOverrideDateIsNullAndSuccessfulIsFalse(
+                    ZonedDateTime.now().minusMinutes(30), user);
+            if (numberOfAttempts >= 5) {
+                //block account for 1 hr
+                user.setLoginLockTime(LocalDateTime.now().plusHours(1));
+                userRepository.save(user);
+
+                log.info("User {} has been locked out until {}.", user.getEmail(), user.getLoginLockTime().toString());
+            }
+        }
     }
 }
