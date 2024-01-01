@@ -10,7 +10,7 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import javax.sql.DataSource;
 
 @Configuration
-@ConditionalOnProperty(value = "pl.jewusiak.grzesbankapi.db.sqliteenabled", havingValue = "true")
+@ConditionalOnProperty(name = "pl.jewusiak.grzesbankapi.db.sqliteenabled", havingValue = "true")
 @Slf4j
 public class SQLiteConfig {
 
