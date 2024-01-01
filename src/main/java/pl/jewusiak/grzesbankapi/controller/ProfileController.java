@@ -7,9 +7,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import pl.jewusiak.grzesbankapi.model.mapper.ResponseMapper;
 import pl.jewusiak.grzesbankapi.model.request.ChangePasswordRequest;
-import pl.jewusiak.grzesbankapi.model.service.AccountService;
-import pl.jewusiak.grzesbankapi.model.service.AuthService;
-import pl.jewusiak.grzesbankapi.model.service.UserService;
+import pl.jewusiak.grzesbankapi.service.AccountService;
+import pl.jewusiak.grzesbankapi.service.AuthService;
+import pl.jewusiak.grzesbankapi.service.UserService;
 import pl.jewusiak.grzesbankapi.utils.EasterEggHandler;
 
 @RestController
@@ -48,5 +48,11 @@ public class ProfileController {
         var user = userService.getUser(authentication);
         authService.changePasswordForUser(user, request.getPassword(), false);
         return ResponseEntity.ok().build();
+    }
+    
+    @GetMapping("/basicdata")
+    public ResponseEntity<?> getBasicData(Authentication authentication) {
+        var user = userService.getUser(authentication);
+        return ResponseEntity.ok(responseMapper.map(user));
     }
 }

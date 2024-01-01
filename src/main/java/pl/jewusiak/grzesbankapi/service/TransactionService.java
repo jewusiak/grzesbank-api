@@ -1,23 +1,18 @@
-package pl.jewusiak.grzesbankapi.model.service;
+package pl.jewusiak.grzesbankapi.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableArgumentResolver;
 import org.springframework.stereotype.Service;
 import pl.jewusiak.grzesbankapi.exceptions.TransactionRejected;
 import pl.jewusiak.grzesbankapi.model.domain.Transaction;
-import pl.jewusiak.grzesbankapi.model.mapper.TransactionMapper;
-import pl.jewusiak.grzesbankapi.model.request.TransferOrderRequest;
 import pl.jewusiak.grzesbankapi.repository.TransactionRepository;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
-import java.util.Iterator;
 import java.util.List;
 
 @Service

@@ -1,7 +1,6 @@
 package pl.jewusiak.grzesbankapi.utils;
 
 import org.springframework.stereotype.Component;
-import pl.jewusiak.grzesbankapi.exceptions.InputValidationFailedException;
 
 import java.util.regex.Pattern;
 

@@ -2,7 +2,7 @@ FROM maven:3-eclipse-temurin-17 as build
 RUN mkdir /app/
 COPY ./ /app/
 WORKDIR /app/
-RUN mvn clean package -Pdocker_local
+RUN mvn clean package -Pdev_local
 
 FROM eclipse-temurin:17
 LABEL authors="Grzegorz Jewusiak"

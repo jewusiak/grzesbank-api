@@ -5,7 +5,7 @@ import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
 import pl.jewusiak.grzesbankapi.model.domain.User;
 import pl.jewusiak.grzesbankapi.model.response.AccountSummaryResponse;
-import pl.jewusiak.grzesbankapi.model.service.TransactionService;
+import pl.jewusiak.grzesbankapi.service.TransactionService;
 
 @Mapper(componentModel = "spring", uses = {TransactionMapper.class, TransactionService.class})
 public abstract class ProfileMapper {

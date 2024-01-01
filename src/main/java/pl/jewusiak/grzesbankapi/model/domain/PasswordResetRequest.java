@@ -1,9 +1,11 @@
 package pl.jewusiak.grzesbankapi.model.domain;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
-import pl.jewusiak.grzesbankapi.model.domain.User;
 
 import java.time.ZonedDateTime;
 import java.util.UUID;

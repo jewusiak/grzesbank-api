@@ -1,4 +1,4 @@
-package pl.jewusiak.grzesbankapi.model.service;
+package pl.jewusiak.grzesbankapi.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

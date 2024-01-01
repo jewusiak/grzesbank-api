@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.*;
 import pl.jewusiak.grzesbankapi.exceptions.TransactionRejected;
 import pl.jewusiak.grzesbankapi.model.mapper.TransactionMapper;
 import pl.jewusiak.grzesbankapi.model.request.TransferOrderRequest;
-import pl.jewusiak.grzesbankapi.model.service.TransactionService;
-import pl.jewusiak.grzesbankapi.model.service.UserService;
+import pl.jewusiak.grzesbankapi.service.TransactionService;
+import pl.jewusiak.grzesbankapi.service.UserService;
 
 @Controller
 @RequestMapping("/transactions")

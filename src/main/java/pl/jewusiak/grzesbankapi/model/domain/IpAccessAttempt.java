@@ -1,9 +1,6 @@
 package pl.jewusiak.grzesbankapi.model.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,14 +14,23 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class IpLoginAttempt {
+public class IpAccessAttempt {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID uuid;
     
     private String ip;
     
+    @Enumerated(EnumType.STRING)
+    private AccessibleResource resource;
+    
     private ZonedDateTime date;
     
-    private Boolean overridden;
+    private ZonedDateTime overrideDate;
+    
+    private Boolean successful;
+    
+    public enum AccessibleResource {
+        IP_LOGIN, IP_PASS_RESET_REQUEST, IP_PASS_RESET_2ND;
+    }
 }

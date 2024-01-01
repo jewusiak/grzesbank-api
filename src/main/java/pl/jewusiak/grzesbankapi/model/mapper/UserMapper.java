@@ -1,6 +1,5 @@
 package pl.jewusiak.grzesbankapi.model.mapper;
 
-import jakarta.persistence.Id;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import pl.jewusiak.grzesbankapi.model.domain.User;

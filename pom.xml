@@ -32,8 +32,19 @@
                 <spring.profiles.active>docker_nas</spring.profiles.active>
             </properties>
         </profile>
+        <profile>
+            <id>docker_local</id>
+            <properties>
+                <spring.profiles.active>docker_local</spring.profiles.active>
+            </properties>
+        </profile>
     </profiles>
     <dependencies>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.33</version>
+        </dependency>        
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
@@ -79,6 +90,11 @@
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
             <version>1.5.5.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-oauth2-client</artifactId>
+            <version>3.1.2</version>
         </dependency>
     </dependencies>
 
