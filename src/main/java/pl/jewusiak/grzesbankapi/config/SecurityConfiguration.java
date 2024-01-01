@@ -1,4 +1,4 @@
-package pl.jewusiak.grzesbankapi;
+package pl.jewusiak.grzesbankapi.config;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;

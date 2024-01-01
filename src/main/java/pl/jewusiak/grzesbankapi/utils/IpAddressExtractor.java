@@ -1,10 +1,12 @@
 package pl.jewusiak.grzesbankapi.utils;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.stereotype.Component;
 
 /**
  * From <a href="https://stackoverflow.com/a/55266907/22032423">Stack Overflow</a>
  */
+@Component
 public class IpAddressExtractor {
 
     private static final String[] IP_HEADER_CANDIDATES = {
@@ -21,7 +23,7 @@ public class IpAddressExtractor {
             "REMOTE_ADDR"
     };
 
-    public static String getClientIpAddressIfServletRequestExist(HttpServletRequest request) {
+    public String getClientIpAddress(HttpServletRequest request) {
         for (String header: IP_HEADER_CANDIDATES) {
             String ipList = request.getHeader(header);
             if (ipList != null && !ipList.isEmpty() && !"unknown".equalsIgnoreCase(ipList)) {

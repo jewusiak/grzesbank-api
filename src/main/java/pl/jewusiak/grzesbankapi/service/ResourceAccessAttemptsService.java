@@ -1,13 +1,11 @@
 package pl.jewusiak.grzesbankapi.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 import pl.jewusiak.grzesbankapi.model.domain.IpAccessAttempt;
 import pl.jewusiak.grzesbankapi.repository.IpAccessAttemptRepository;
-import pl.jewusiak.grzesbankapi.utils.IpAddressExtractor;
 
 import java.time.ZonedDateTime;
 
@@ -18,8 +16,8 @@ public class ResourceAccessAttemptsService {
     private final IpAccessAttemptRepository repository;
 
 
-    public void addIpLoginAttempt(boolean successful) {
-        String ip = getIp();
+    @Transactional
+    public void addIpLoginAttempt(String ip, boolean successful) {
         ZonedDateTime now = ZonedDateTime.now();
         if (successful) {
             ZonedDateTime since = now.minusMinutes(5);
@@ -30,14 +28,12 @@ public class ResourceAccessAttemptsService {
         repository.save(IpAccessAttempt.builder().ip(ip).date(ZonedDateTime.now()).successful(successful).resource(IpAccessAttempt.AccessibleResource.IP_LOGIN).build());
     }
 
-    public void addIpResetRequestAttempt() {
-        String ip = getIp();
+    public void addIpResetRequestAttempt(String ip) {
         log.info("Added PR request (1st step) for IP {}.", ip);
         repository.save(IpAccessAttempt.builder().ip(ip).resource(IpAccessAttempt.AccessibleResource.IP_PASS_RESET_REQUEST).date(ZonedDateTime.now()).build());
     }
 
-    public void addIpReset2ndStepAttempt(boolean successful) {
-        String ip = getIp();
+    public void addIpReset2ndStepAttempt(String ip, boolean successful) {
         ZonedDateTime now = ZonedDateTime.now();
         if (successful) {
             //override 1st step requests
@@ -49,8 +45,7 @@ public class ResourceAccessAttemptsService {
         repository.save(IpAccessAttempt.builder().ip(ip).date(now).successful(successful).resource(IpAccessAttempt.AccessibleResource.IP_PASS_RESET_2ND).build());
     }
 
-    public boolean canIpAccessLogin() {
-        String ip = getIp();
+    public boolean canIpAccessLogin(String ip) {
         //ip logins in the last 5 minutes
         int ipLogins = repository.countResourceAccessAttemptsByResourceAndIpAndDateAfterAndOverrideDateIsNullAndSuccessfulIsFalse(IpAccessAttempt.AccessibleResource.IP_LOGIN, ip, ZonedDateTime.now().minusMinutes(5));
         if (ipLogins >= 7) {
@@ -61,8 +56,7 @@ public class ResourceAccessAttemptsService {
         return true;
     }
 
-    public boolean canIpAccessResetRequest() {
-        String ip = getIp();
+    public boolean canIpAccessResetRequest(String ip) {
         //ip reset requests in the last 5 mins (max. 1)
         int ipRequests = repository.countResourceAccessAttemptsByResourceAndIpAndDateAfterAndOverrideDateIsNull(IpAccessAttempt.AccessibleResource.IP_PASS_RESET_REQUEST, ip, ZonedDateTime.now().minusMinutes(5));
         if (ipRequests >= 1) {
@@ -73,8 +67,7 @@ public class ResourceAccessAttemptsService {
         return true;
     }
 
-    public boolean canIpAccessReset2ndStep() {
-        String ip = getIp();
+    public boolean canIpAccessReset2ndStep(String ip) {
         //ip reset requests in the last 5 mins
         int ipRequests = repository.countResourceAccessAttemptsByResourceAndIpAndDateAfterAndOverrideDateIsNullAndSuccessfulIsFalse(IpAccessAttempt.AccessibleResource.IP_PASS_RESET_2ND, ip, ZonedDateTime.now().minusMinutes(5));
         if (ipRequests >= 1) {
@@ -83,12 +76,5 @@ public class ResourceAccessAttemptsService {
         }
         log.info("IP {} was granted access to PR 2nd step.", ip);
         return true;
-    }
-
-    public String getIp() {
-        if (RequestContextHolder.getRequestAttributes() == null) {
-            throw new RuntimeException("Failed to extract IP address");
-        }
-        return IpAddressExtractor.getClientIpAddressIfServletRequestExist(((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest());
     }
 }
