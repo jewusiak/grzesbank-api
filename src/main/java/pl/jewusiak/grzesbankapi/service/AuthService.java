@@ -138,7 +138,7 @@ public class AuthService {
             return false;
         }
         var numberOfAttempts = userLoginAttemptRepository.countLoginAttemptsByDateAfterAndUserAndOverrideDateIsNullAndSuccessfulIsFalse(ZonedDateTime.now().minusMinutes(30), user);
-        if (numberOfAttempts < 5) {
+        if (numberOfAttempts < 5) { 
             return true;
         }
 
