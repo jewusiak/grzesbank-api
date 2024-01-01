@@ -1,9 +1,10 @@
 package pl.jewusiak.grzesbankapi.model.request;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.Data;
-import org.hibernate.validator.constraints.Length;
 import pl.jewusiak.grzesbankapi.model.domain.User;
 import pl.jewusiak.grzesbankapi.utils.ValidationService;
 import pl.jewusiak.grzesbankapi.utils.validation.PasswordConstraint;

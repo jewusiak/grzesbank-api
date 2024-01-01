@@ -2,7 +2,6 @@ package pl.jewusiak.grzesbankapi.utils.validation;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-import pl.jewusiak.grzesbankapi.exceptions.InputValidationFailedException;
 
 import java.util.regex.Pattern;
 

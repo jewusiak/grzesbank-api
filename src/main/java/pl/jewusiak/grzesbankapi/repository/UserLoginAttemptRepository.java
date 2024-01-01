@@ -3,8 +3,8 @@ package pl.jewusiak.grzesbankapi.repository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
-import pl.jewusiak.grzesbankapi.model.domain.UserLoginAttempt;
 import pl.jewusiak.grzesbankapi.model.domain.User;
+import pl.jewusiak.grzesbankapi.model.domain.UserLoginAttempt;
 
 import java.time.ZonedDateTime;
 import java.util.UUID;
@@ -13,6 +13,6 @@ public interface UserLoginAttemptRepository extends CrudRepository<UserLoginAtte
     int countLoginAttemptsByDateAfterAndUserAndOverrideDateIsNullAndSuccessfulIsFalse(ZonedDateTime countSince, User user);
     
     @Modifying
-    @Query("update UserLoginAttempt ula set ula.overrideDate=?1 where ula.user = ?2")
+    @Query("UPDATE UserLoginAttempt ula SET ula.overrideDate=?1 WHERE ula.user = ?2")
     void overrideLoginsForUser(ZonedDateTime overrideDate, User user);
 }

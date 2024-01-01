@@ -7,9 +7,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import pl.jewusiak.grzesbankapi.model.mapper.ResponseMapper;
 import pl.jewusiak.grzesbankapi.model.request.ChangePasswordRequest;
-import pl.jewusiak.grzesbankapi.model.service.AccountService;
-import pl.jewusiak.grzesbankapi.model.service.AuthService;
-import pl.jewusiak.grzesbankapi.model.service.UserService;
+import pl.jewusiak.grzesbankapi.service.AccountService;
+import pl.jewusiak.grzesbankapi.service.AuthService;
+import pl.jewusiak.grzesbankapi.service.UserService;
 import pl.jewusiak.grzesbankapi.utils.EasterEggHandler;
 
 @RestController

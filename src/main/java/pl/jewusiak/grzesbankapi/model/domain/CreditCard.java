@@ -1,7 +1,6 @@
 package pl.jewusiak.grzesbankapi.model.domain;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import pl.jewusiak.grzesbankapi.utils.AesStringAttributeEncryptor;
 

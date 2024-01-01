@@ -1,6 +1,6 @@
 package pl.jewusiak.grzesbankapi.utils;
+
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import pl.jewusiak.grzesbankapi.model.domain.CreditCard;
 import pl.jewusiak.grzesbankapi.model.domain.User;
 
