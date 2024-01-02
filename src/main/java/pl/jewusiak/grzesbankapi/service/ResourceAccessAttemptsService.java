@@ -27,12 +27,14 @@ public class ResourceAccessAttemptsService {
         } else log.info("Added failed login attempt for IP {} at {}.", ip, now);
         repository.save(IpAccessAttempt.builder().ip(ip).date(ZonedDateTime.now()).successful(successful).resource(IpAccessAttempt.AccessibleResource.IP_LOGIN).build());
     }
-
+    
+    @Transactional
     public void addIpResetRequestAttempt(String ip) {
         log.info("Added PR request (1st step) for IP {}.", ip);
         repository.save(IpAccessAttempt.builder().ip(ip).resource(IpAccessAttempt.AccessibleResource.IP_PASS_RESET_REQUEST).date(ZonedDateTime.now()).build());
     }
 
+    @Transactional
     public void addIpReset2ndStepAttempt(String ip, boolean successful) {
         ZonedDateTime now = ZonedDateTime.now();
         if (successful) {
