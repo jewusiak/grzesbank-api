@@ -100,7 +100,7 @@ public class AuthService {
         log.info("Requested password reset for user {} who has been sent an email with a link {}{} to restore their password. Valid until {}.\nUUID: {}", request.getUser().getEmail(), passwordResetUrlPrefix, request.getId(), request.getValidity(), request.getId());
     }
 
-
+    @Transactional
     public void changePasswordWithToken(UUID token, String newPass) {
         var req = passwordResetRequestRepository.findById(token).orElseThrow(() -> new InvalidResetPasswordToken("Token not found"));
         if (req.isUsed()) {
