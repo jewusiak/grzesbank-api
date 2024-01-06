@@ -35,7 +35,8 @@ public class DefaultDataGenerator {
     
     private void createUser(String lastname, String email) {
         if(userService.userExists(email)){
-            log.info("User {} already exists. Skipping.", email);
+            var user = userService.getUser(email);
+            log.info("User {} {} ({}, accn: {}) already exists. Skipping.",user.getFirstName(), user.getLastName(), user.getEmail(), user.getAccount().getAccountNumber());
             return;
         }
         
