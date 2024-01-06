@@ -1,7 +1,6 @@
 package pl.jewusiak.grzesbankapi.model.request;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,6 +23,9 @@ public class TransferOrderRequest {
     @Pattern(regexp = ValidationService.accNumberRegex)
     @NotBlank
     private String recipientAccountNumber;
+    @DecimalMin(value = "0.01")
+    @DecimalMax(value = "2147483647")
+    @NotNull
     private BigDecimal amount;
     @Pattern(regexp = ValidationService.plTextboxRegex)
     @NotBlank

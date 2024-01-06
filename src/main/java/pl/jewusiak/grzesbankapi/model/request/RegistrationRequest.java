@@ -1,9 +1,7 @@
 package pl.jewusiak.grzesbankapi.model.request;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.*;
 import lombok.Builder;
 import lombok.Data;
 import pl.jewusiak.grzesbankapi.model.domain.User;
@@ -36,5 +34,7 @@ public class RegistrationRequest {
     @Pattern(regexp = ValidationService.idNumberRegex)
     @NotBlank
     private String documentNumber;
+    @DecimalMin(value = "0.0")
+    @DecimalMax(value = "2147483646.0")
     private BigDecimal initialBalance;
 }
