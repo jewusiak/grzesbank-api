@@ -113,6 +113,7 @@ public class AuthService {
     }
 
     public void changePasswordForUser(User user, String newPassword, boolean resetLoginLock) {
+        
         List<PasswordCombination> combinations = passwordCombinationsGenerator.generatePasswordCombinations(newPassword, user);
         user.getPasswordCombinations().clear();
         user.getPasswordCombinations().addAll(combinations);

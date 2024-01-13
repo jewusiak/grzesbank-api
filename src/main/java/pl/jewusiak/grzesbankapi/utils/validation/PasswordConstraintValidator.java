@@ -17,6 +17,7 @@ public class PasswordConstraintValidator implements ConstraintValidator<Password
     private boolean validatePassword(String pass) {
         return pass != null
                 && pass.length() >= 8
+                && pass.length() <= 20
                 && password.matcher(pass).find()
                 && passwordAlphaBig.matcher(pass).find()
                 && passwordAlphaSmall.matcher(pass).find()
