@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.UUID;
 
 @Entity
@@ -32,5 +33,18 @@ public class PasswordCombination {
 
     public void setIndices(Integer[] indices) {
         this.indices = Arrays.toString(indices).replace("[", "").replace("]", "").replace(" ", "");
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PasswordCombination that = (PasswordCombination) o;
+        return Objects.equals(indices, that.indices);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(indices, passwordHash);
     }
 }

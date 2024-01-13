@@ -40,7 +40,6 @@ public class AuthController {
     @GetMapping("/login")
     @SneakyThrows
     public ResponseEntity<PasswordCombinationResponse> getPasswordCombinations(@RequestParam @Pattern(regexp = ValidationService.emailRegex) @NotBlank String email) {
-        Thread.sleep(1500);
         return ResponseEntity.ok(authService.getRandomPasswordCombination(email));
     }
 
@@ -48,7 +47,6 @@ public class AuthController {
     @SneakyThrows
     @Transactional
     public ResponseEntity<?> auth(@RequestBody @Valid LoginRequest loginRequest, HttpSession session, HttpServletRequest request) {
-        Thread.sleep(1500);
         var userOpt = authService.auth(loginRequest.getPcid(), loginRequest.getEmail(), loginRequest.getPassword());
         if (userOpt.isPresent()) {
             SecurityContext sc = SecurityContextHolder.getContext();
@@ -63,7 +61,6 @@ public class AuthController {
     @PostMapping("/register")
     @SneakyThrows
     public ResponseEntity<?> register(@RequestBody @Valid RegistrationRequest request) {
-        Thread.sleep(1500);
         authService.register(request);
         return ResponseEntity.ok("OK");
     }
@@ -71,7 +68,6 @@ public class AuthController {
     @PostMapping("/resetpassword")
     @SneakyThrows
     public ResponseEntity<?> resetPassword(@RequestParam @Pattern(regexp = ValidationService.emailRegex) @NotBlank String email) {
-        Thread.sleep(1500);
         authService.generatePasswordResetRequest(email);
         return ResponseEntity.ok("OK");
     }
@@ -79,7 +75,6 @@ public class AuthController {
     @PutMapping("/resetpassword")
     @SneakyThrows
     public ResponseEntity<?> doResetPassword(@RequestBody @Valid ChangePasswordWithTokenRequest request) {
-        Thread.sleep(1500);
         authService.changePasswordWithToken(request.getToken(), request.getPassword());
         return ResponseEntity.ok("OK");
     }

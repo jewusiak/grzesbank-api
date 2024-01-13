@@ -1,6 +1,5 @@
 package pl.jewusiak.grzesbankapi.model.mapper;
 
-import lombok.RequiredArgsConstructor;
 import org.mapstruct.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import pl.jewusiak.grzesbankapi.model.domain.PasswordCombination;
@@ -31,8 +30,9 @@ public abstract class UserMapper {
     public abstract User map(RegistrationRequest registrationRequest);
 
     @AfterMapping
-    void map(@MappingTarget User user, RegistrationRequest registrationRequest){
-        List<PasswordCombination> combinations = passwordCombinationsGenerator.generatePasswordCombinations(registrationRequest.getPassword(), user);
+    void map(@MappingTarget User user, RegistrationRequest registrationRequest) {
+        List<PasswordCombination> combinations = passwordCombinationsGenerator.generatePasswordCombinations(registrationRequest.getPassword());
+        combinations.forEach(c -> c.setUser(user));
         user.setPasswordCombinations(combinations);
         var account = accountFactory.prepareAccount(user);
         user.setAccount(account);

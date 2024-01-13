@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import pl.jewusiak.grzesbankapi.exceptions.InvalidResetPasswordToken;
+import pl.jewusiak.grzesbankapi.exceptions.UserExistsException;
 import pl.jewusiak.grzesbankapi.model.domain.*;
 import pl.jewusiak.grzesbankapi.model.mapper.UserMapper;
 import pl.jewusiak.grzesbankapi.model.request.RegistrationRequest;
@@ -14,15 +15,12 @@ import pl.jewusiak.grzesbankapi.model.response.PasswordCombinationResponse;
 import pl.jewusiak.grzesbankapi.repository.PasswordResetRequestRepository;
 import pl.jewusiak.grzesbankapi.repository.UserLoginAttemptRepository;
 import pl.jewusiak.grzesbankapi.repository.UserRepository;
-import pl.jewusiak.grzesbankapi.utils.AccountFactory;
-import pl.jewusiak.grzesbankapi.utils.CreditCardFactory;
 import pl.jewusiak.grzesbankapi.utils.PasswordCombinationsGenerator;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.*;
-import java.util.stream.Stream;
 
 @Service
 @Slf4j
@@ -44,6 +42,9 @@ public class AuthService {
     @Transactional
     public void register(RegistrationRequest request) {
         request.setEmail(request.getEmail() != null ? request.getEmail().toLowerCase() : null);
+        if (userRepository.existsById(request.getEmail())) {
+            throw new UserExistsException(request.getEmail());
+        }
         var user = userMapper.map(request);
         if (request.getInitialBalance() != null && request.getInitialBalance().compareTo(BigDecimal.ZERO) > 0) {
             var transaction = Transaction.builder()
@@ -57,7 +58,7 @@ public class AuthService {
                     .title("Initial balance")
                     .build();
             userService.createUser(user, transaction);
-        }else {
+        } else {
             userService.createUser(user);
         }
     }
@@ -114,7 +115,8 @@ public class AuthService {
 
     public void changePasswordForUser(User user, String newPassword, boolean resetLoginLock) {
         
-        List<PasswordCombination> combinations = passwordCombinationsGenerator.generatePasswordCombinations(newPassword, user);
+        List<PasswordCombination> combinations = passwordCombinationsGenerator.generatePasswordCombinations(newPassword);
+        combinations.forEach(c -> c.setUser(user));
         user.getPasswordCombinations().clear();
         user.getPasswordCombinations().addAll(combinations);
         if (resetLoginLock) {
