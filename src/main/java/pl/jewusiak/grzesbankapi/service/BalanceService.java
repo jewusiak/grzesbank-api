@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 @RequiredArgsConstructor
 public class BalanceService {
     private final AccountRepository accountRepository;
-    @Value("pl.jewusiak.grzesbankapi.business.bank_acn")
+    @Value("${pl.jewusiak.grzesbankapi.business.bank_acn}")
     private String bankAccountNumber;    
     /**
      * Adds change to accN

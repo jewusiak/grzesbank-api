@@ -7,12 +7,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
-import org.springframework.web.server.ResponseStatusException;
 import pl.jewusiak.grzesbankapi.model.domain.Transaction;
 import pl.jewusiak.grzesbankapi.model.domain.User;
 import pl.jewusiak.grzesbankapi.model.mapper.UserMapper;
 import pl.jewusiak.grzesbankapi.model.request.RegistrationRequest;
-import pl.jewusiak.grzesbankapi.service.AuthService;
 import pl.jewusiak.grzesbankapi.service.UserService;
 
 import java.math.BigDecimal;
@@ -25,7 +23,7 @@ public class DefaultDataGenerator {
     private final UserService userService;
     private final UserMapper userMapper;
 
-    @Value("pl.jewusiak.grzesbankapi.business.bank_acn")
+    @Value("${pl.jewusiak.grzesbankapi.business.bank_acn}")
     private String bankAccountNumber;
     @EventListener(ApplicationReadyEvent.class)
     public void doSomethingAfterStartup() {

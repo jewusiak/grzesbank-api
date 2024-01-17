@@ -36,7 +36,7 @@ public class AuthService {
     @Value("${pl.jewusiak.grzesbankapi.passwordreset.urlprefix}")
     private String passwordResetUrlPrefix;
 
-    @Value("pl.jewusiak.grzesbankapi.business.bank_acn")
+    @Value("${pl.jewusiak.grzesbankapi.business.bank_acn}")
     private String bankAccountNumber;
 
     @Transactional

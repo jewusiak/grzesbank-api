@@ -8,20 +8,20 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
-import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.util.Base64;
 
 /**
- * Converter encrypts/decrypts using AES-256 with CBC and PKCS5Padding
+ * Converter encrypts/decrypts using AES-256 with GCM
  */
 @Service
 public class AesStringAttributeEncryptor implements AttributeConverter<String, String> {
 
     public AesStringAttributeEncryptor() throws NoSuchPaddingException, NoSuchAlgorithmException {
-        cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        cipher = Cipher.getInstance("AES/GCM/NoPadding");
     }
 
     private Key key;
@@ -32,7 +32,7 @@ public class AesStringAttributeEncryptor implements AttributeConverter<String, S
     @Value("${pl.jewusiak.grzesbankapi.crypto.key}") private String keyB64;
 
     private Key getKey() {
-        if (key == null){
+        if (key == null) {
             var decodedKey = Base64.getDecoder().decode(keyB64);
             key = new SecretKeySpec(decodedKey, "AES");
         }
@@ -47,7 +47,7 @@ public class AesStringAttributeEncryptor implements AttributeConverter<String, S
 
             var iv = new byte[16];
             rand.nextBytes(iv);
-            IvParameterSpec ivParameterSpec = new IvParameterSpec(iv);
+            GCMParameterSpec ivParameterSpec = new GCMParameterSpec(iv.length * 8, iv);
 
             cipher.init(Cipher.ENCRYPT_MODE, getKey(), ivParameterSpec, rand);
 
@@ -59,7 +59,6 @@ public class AesStringAttributeEncryptor implements AttributeConverter<String, S
             return Base64.getEncoder().encodeToString(result);
         } catch (BadPaddingException | InvalidKeyException | InvalidAlgorithmParameterException |
                  IllegalBlockSizeException e) {
-            //e.printStackTrace(); //todo: implement proper exception handling
             throw new RuntimeException(e);
         }
     }
@@ -74,7 +73,7 @@ public class AesStringAttributeEncryptor implements AttributeConverter<String, S
             System.arraycopy(encryptedData, 0, iv, 0, iv.length);
             System.arraycopy(encryptedData, iv.length, cipherText, 0, cipherText.length);
 
-            IvParameterSpec ivspec = new IvParameterSpec(iv);
+            GCMParameterSpec ivspec = new GCMParameterSpec(iv.length * 8, iv);
 
             cipher.init(Cipher.DECRYPT_MODE, getKey(), ivspec);
 
